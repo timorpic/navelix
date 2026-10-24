@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "pi-runtime-removal-20261024",
+  "goal": "移除 Pi 运行时后，清理本项目规则入口中指向已删除的 ~/.pi/agent/AGENTS.md 的失效引用，避免后续客户端按文档找不到规则入口",
+  "allowed_paths": [
+    ".ai/tasks/pi-runtime-removal-20261024.json",
+    "AGENTS.md"
+  ],
+  "forbidden_paths": [
+    ".github/workflows/**",
+    ".env",
+    ".env.local",
+    "data/**"
+  ],
+  "constraints": {
+    "allow_new_dependencies": false,
+    "allow_database_changes": false,
+    "allow_api_breaking_changes": false,
+    "allow_unrelated_refactor": false
+  },
+  "acceptance": [
+    "规则入口文件不再引用 ~/.pi/agent/AGENTS.md，其余规则内容与正文保持原样",
+    "全仓检索确认无其他 .pi/agent、pi-agent、pi-node、earendil 残留引用",
+    "仅修改文档与任务契约，不改动业务代码、CI 与依赖",
+    "不执行本机构建或测试；静态范围检查通过"
+  ]
+}
