@@ -1575,5 +1575,14 @@
   "api_4a1793e9": "用户不存在",
   "api_8a1a8e59": "缺少提示词",
   "api_f60c8241": "无效的 JSON 数据",
-  "api_6d3ffece": "不支持的界面语言"
+  "api_6d3ffece": "不支持的界面语言",
+  "license_activation_input_hint": "上传授权文件或输入 License Key 离线激活",
+  "license_file_upload": "上传授权文件（.swlicense）",
+  "license_file_hint": "支持 AMS 签发的 Navelix .swlicense 文件（最大 64 KiB）。导入后点击“立即激活 Pro”完成校验。",
+  "license_file_reading": "正在读取授权文件…",
+  "license_file_loaded": "授权文件已导入，请点击“立即激活 Pro”完成校验。",
+  "license_file_invalid_extension": "请选择 .swlicense 授权文件。",
+  "license_file_too_large": "授权文件不能超过 64 KiB。",
+  "license_file_empty": "授权文件为空，请重新选择。",
+  "license_file_read_failed": "无法读取授权文件，请重试或手动粘贴 License Key。"
 }

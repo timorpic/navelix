@@ -23,7 +23,7 @@ export default function AdminProLicenseModal({
   const tx = useTranslations();
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fadeIn">
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-gray-100 dark:border-slate-800 space-y-5">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full max-h-[calc(100dvh-2rem)] overflow-y-auto shadow-2xl border border-gray-100 dark:border-slate-800 space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-white dark:bg-[#080B0F] border border-emerald-200/90 dark:border-emerald-500/30 p-2 flex items-center justify-center shrink-0 shadow-sm ring-2 ring-emerald-500/20">
@@ -33,7 +33,7 @@ export default function AdminProLicenseModal({
               <h3 className="text-base font-bold text-gray-900 dark:text-white">
                 {tx("activate_navelix_pro_f76452f4")}</h3>
               <p className="text-xs text-gray-400 dark:text-slate-400">
-                {tx("enter_your_purchased_license_key_to_activate_off_8c2a13ef")}</p>
+                {tx("license_activation_input_hint")}</p>
             </div>
           </div>
           <button
@@ -66,12 +66,36 @@ export default function AdminProLicenseModal({
               {tx("provide_this_instance_fingerprint_when_requestin_208e0c98")}</p>
           </div>
 
+          <div className="space-y-1.5">
+            <label htmlFor="pro-license-file" className="block text-xs font-bold text-gray-700 dark:text-slate-200">
+              {tx("license_file_upload")}
+            </label>
+            <input
+              id="pro-license-file"
+              type="file"
+              accept=".swlicense"
+              disabled={license.isReadingLicenseFile || license.isActivatingLicense}
+              aria-describedby="pro-license-file-hint"
+              onChange={(e) => {
+                const file = e.currentTarget.files?.[0];
+                e.currentTarget.value = "";
+                if (file) void license.importLicenseFile(file);
+              }}
+              className="block w-full min-w-0 rounded-xl border border-gray-200 dark:border-slate-700 p-2 text-xs text-gray-700 dark:text-slate-200 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-50 dark:file:bg-emerald-950/30 file:px-3 file:py-2 file:text-emerald-800 dark:file:text-emerald-300 focus-visible:outline-2 focus-visible:outline-[#00C776] disabled:opacity-50"
+            />
+            <p id="pro-license-file-hint" role="status" className="text-[11px] text-gray-500 dark:text-slate-400">
+              {license.isReadingLicenseFile ? tx("license_file_reading") : tx("license_file_hint")}
+            </p>
+          </div>
+
           <div>
-            <label className="block text-xs font-bold text-gray-700 dark:text-slate-200 mb-1.5">
+            <label htmlFor="pro-license-key" className="block text-xs font-bold text-gray-700 dark:text-slate-200 mb-1.5">
               {tx("license_key_47a99061")}</label>
             <textarea
+              id="pro-license-key"
               rows={3}
               required
+              disabled={license.isReadingLicenseFile || license.isActivatingLicense}
               value={license.licenseInput}
               onChange={(e) => license.setLicenseInput(e.target.value)}
               placeholder={tx("paste_your_complete_license_key_starting_with_ey_fc5fdf17")}
@@ -95,7 +119,7 @@ export default function AdminProLicenseModal({
               {tx("cancel_2cd0f3be")}</button>
             <button
               type="submit"
-              disabled={license.isActivatingLicense || !license.licenseInput.trim()}
+              disabled={license.isReadingLicenseFile || license.isActivatingLicense || !license.licenseInput.trim()}
               className="px-5 py-2 text-xs font-bold text-white bg-[#00C776] hover:bg-[#00B068] rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-md"
             >
               {license.isActivatingLicense ? tx("verifying_license_ba50213e") : tx("activate_pro_dab153b1")}

@@ -3,7 +3,8 @@
 import { useText } from "@/hooks/use-text";
 import { useTranslations } from "next-intl";
 import { parseEEDriverStatus, type EEDriverStatus } from "@/lib/ee-driver-status";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { readLicenseFile } from "@/lib/license-file";
 import {
   buildLicenseActivationPayload,
   parseLicenseActivationResult,
@@ -42,6 +43,8 @@ export interface UseAdminLicenseResult {
   licenseInput: string;
   setLicenseInput: (v: string) => void;
   isActivatingLicense: boolean;
+  isReadingLicenseFile: boolean;
+  importLicenseFile: (file: File) => Promise<void>;
   licenseModalOpen: boolean;
   openLicenseModal: () => void;
   closeLicenseModal: () => void;
@@ -71,6 +74,10 @@ export function useAdminLicense({
   const [licenseInput, setLicenseInput] = useState("");
   const [isActivatingLicense, setIsActivatingLicense] = useState(false);
   const [licenseModalOpen, setLicenseModalOpen] = useState(false);
+  const [isReadingLicenseFile, setIsReadingLicenseFile] = useState(false);
+  const fileReadVersion = useRef(0);
+
+  useEffect(() => () => { fileReadVersion.current += 1; }, []);
 
   const fetchLicense = useCallback(async () => {
     setDriverStatusLoading(true);
@@ -101,7 +108,32 @@ export function useAdminLicense({
   }, [fetchLicense]);
 
   const openLicenseModal = useCallback(() => setLicenseModalOpen(true), []);
-  const closeLicenseModal = useCallback(() => setLicenseModalOpen(false), []);
+  const closeLicenseModal = useCallback(() => {
+    fileReadVersion.current += 1;
+    setIsReadingLicenseFile(false);
+    setLicenseModalOpen(false);
+  }, []);
+
+  const importLicenseFile = useCallback(async (file: File) => {
+    if (isActivatingLicense) return;
+    const version = ++fileReadVersion.current;
+    setIsReadingLicenseFile(true);
+    const result = await readLicenseFile(file);
+    if (version !== fileReadVersion.current) return;
+    setIsReadingLicenseFile(false);
+    if (result.ok) {
+      setLicenseInput(result.licenseKey);
+      flash(tx("license_file_loaded"));
+    } else {
+      const errors = {
+        extension: "license_file_invalid_extension",
+        size: "license_file_too_large",
+        empty: "license_file_empty",
+        read: "license_file_read_failed",
+      } as const;
+      flash(tx(errors[result.error]));
+    }
+  }, [isActivatingLicense, flash, tx]);
 
   const copyFingerprint = useCallback(() => {
     navigator.clipboard.writeText(machineFingerprint);
@@ -111,6 +143,7 @@ export function useAdminLicense({
   const activateLicense = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+      if (isReadingLicenseFile || isActivatingLicense) return;
       const payload = buildLicenseActivationPayload(licenseInput);
       if (!payload) return;
       setIsActivatingLicense(true);
@@ -136,7 +169,7 @@ export function useAdminLicense({
         setIsActivatingLicense(false);
       }
     },
-    [licenseInput, flash, tx, text],
+    [licenseInput, isReadingLicenseFile, isActivatingLicense, flash, tx, text],
   );
 
   const removeLicense = useCallback(async () => {
@@ -164,6 +197,8 @@ export function useAdminLicense({
     licenseInput,
     setLicenseInput,
     isActivatingLicense,
+    isReadingLicenseFile,
+    importLicenseFile,
     licenseModalOpen,
     openLicenseModal,
     closeLicenseModal,
