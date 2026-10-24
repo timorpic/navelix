@@ -108,7 +108,7 @@ pnpm start
 | `NAVELIX_COOKIE_SECURE` | `false` | 否 | 认证 Cookie 是否强制 `Secure` 标头（局域网 HTTP 保持 `false`；使用域名并启用 HTTPS 反代时设为 `true`） |
 | `TRUST_PROXY` | `false` | 否 | 是否信任上游反向代理的 `X-Forwarded-For` 真实 IP 标头（若前置部署了 Nginx/Caddy/Cloudflare，**务必设为 `true`** 以启用精准限流） |
 | `NAVELIX_DATA_DIR` | `/app/data` | 否 | 数据存储目录（SQLite 库、备份、日志与初始密码文件）；Docker 镜像内为 `/app/data`，源码部署默认为 `<cwd>/data` |
-| `NAVELIX_LICENSE_KEY` | *(留空)* | 否 | 商业版 License Key；容器启动时注入激活，也可在管理后台网页激活 |
+| `NAVELIX_LICENSE_KEY` | *(留空)* | 否 | 商业版 License Key；容器启动时注入激活，也可在管理后台网页粘贴密钥或导入 `.swlicense` 文件激活 |
 | `NAVELIX_GITHUB_REPO` | `timorpic/Navelix` | 否 | 版本更新检测使用的 GitHub 仓库（`owner/repo`）；fork 后可指向自己的仓库 |
 | `TZ` | `UTC` | 否 | 容器运行时时区；镜像未设默认值（UTC），示例 Compose 中设为 `Asia/Shanghai`，需要本地时区请显式传入 |
 
@@ -155,6 +155,11 @@ server {
     }
 }
 ```
+
+
+## 在管理后台导入 Pro 授权文件
+
+进入管理后台的「Pro 商业授权」，打开激活窗口，选择 AMS 签发的 Navelix `.swlicense` 文件（纯文本密钥，最大 64 KiB）。文件内容会填入 License Key 输入框，再点击「立即激活 Pro」完成离线签名、有效期和实例指纹校验。也可继续手动粘贴密钥；导入文件本身不会直接激活。
 
 ---
 

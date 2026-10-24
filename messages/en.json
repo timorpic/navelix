@@ -1575,5 +1575,14 @@
   "api_4a1793e9": "User not found",
   "api_8a1a8e59": "Missing prompt",
   "api_f60c8241": "Invalid JSON",
-  "api_6d3ffece": "Unsupported language"
+  "api_6d3ffece": "Unsupported language",
+  "license_activation_input_hint": "Upload a license file or enter a License Key to activate offline",
+  "license_file_upload": "Upload license file (.swlicense)",
+  "license_file_hint": "Supports Navelix .swlicense files issued by AMS (up to 64 KiB). After importing, click Activate Pro to verify.",
+  "license_file_reading": "Reading license file…",
+  "license_file_loaded": "License file imported. Click Activate Pro to verify.",
+  "license_file_invalid_extension": "Please select a .swlicense license file.",
+  "license_file_too_large": "License files must not exceed 64 KiB.",
+  "license_file_empty": "The license file is empty. Please select another file.",
+  "license_file_read_failed": "Could not read the license file. Try again or paste the License Key manually."
 }
