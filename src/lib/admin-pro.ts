@@ -29,6 +29,7 @@ export interface LicensePayload {
 }
 
 export interface LicenseStatus {
+  seats?: { used: number; limit: number };
   isPro: boolean;
   isEE?: boolean;
   isDockerBuild?: boolean;

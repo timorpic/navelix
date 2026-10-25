@@ -167,6 +167,7 @@ describe("Navelix Pro Offline License & Cryptographic Verification", () => {
       customer: "企业通配客户",
       email: "corp@example.com",
       plan: "team_enterprise",
+      maxSeats: 20,
       features: ["all"],
       issuedAt: Date.now(),
       expiresAt: 0,

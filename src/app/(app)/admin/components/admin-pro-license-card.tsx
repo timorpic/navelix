@@ -1,21 +1,17 @@
 "use client";
 
-import { useText } from "@/hooks/use-text";
 import { useTranslations, useLocale } from "next-intl";
 import BrandLogo from "@/components/brand-logo";
-import {
-  licensePlanLabel,
-  licenseSummaryLine,
-  type LicenseStatus,
-} from "@/lib/admin-pro";
+import type { LicenseStatus } from "@/lib/admin-pro";
+import { licenseSeatLimit } from "@/lib/license-seats";
 
 /**
  * 「Pro 商业授权」Tab 的卡片 1：💎 商业授权与 License 激活中心。
  *
  * 从 `admin-pro-tab.tsx`（原 1018 行）抽出 —— 该文件把商业授权、云存储备份、
  * 书签探针、品牌 LOGO 与代码注入五块设置塞在一起。本组件只负责渲染授权
- * 横幅与状态徽标；标题、徽标分支、计划名与授权信息行的判定在
- * `@/lib/admin-pro`，状态与接口调用在 `useAdminLicense()`。
+ * 横幅、档位与席位使用量；席位策略复用 license-seats，
+ * 状态与接口调用在 `useAdminLicense()`。
  */
 export default function AdminProLicenseCard({
   licenseStatus,
@@ -26,22 +22,27 @@ export default function AdminProLicenseCard({
   onRemoveLicense: () => void;
   onOpenLicenseModal: () => void;
 }) {
-  const text = useText();
   const tx = useTranslations();
   const locale = useLocale();
+  const payload = licenseStatus.payload;
+  const plan = payload?.plan;
+  const limit = licenseStatus.seats?.limit ?? (licenseStatus.isPro && payload ? licenseSeatLimit(payload) : 2);
+  const title = !licenseStatus.isPro ? tx("pro_license_299265b7")
+    : plan === "team_enterprise" ? tx("license_team_title", { v0: limit })
+    : plan === "pro_lifetime" ? tx("license_lifetime_title") : tx("license_annual_title");
   return (
     <div className="bg-gradient-to-r from-emerald-50/80 via-white to-teal-50/60 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/90 rounded-3xl p-6 sm:p-7 border border-emerald-200/90 dark:border-emerald-500/30 shadow-sm dark:shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden transition-colors">
       <div className="flex items-start sm:items-center gap-4 z-10">
         <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#080B0F] border border-emerald-200/90 dark:border-emerald-500/30 p-2.5 flex items-center justify-center shrink-0 shadow-md ring-4 ring-emerald-500/15">
           <BrandLogo />
         </div>
-        <div>
+        <div className="min-w-0 break-words">
           <div className="flex items-center gap-2.5 flex-wrap">
             <h2 className="text-lg font-black text-gray-900 dark:text-white tracking-wide">
-              {tx("pro_license_299265b7")}</h2>
+              {title}</h2>
             {licenseStatus.isPro ? (
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 dark:bg-emerald-400/20 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-400/40 shadow-xs">
-                {tx("activated_9f512be5")}{text(licensePlanLabel(licenseStatus.payload))}
+                {tx(plan === "team_enterprise" ? "license_enterprise_active" : plan === "pro_lifetime" ? "license_lifetime_active" : "license_annual_active")}
               </span>
             ) : (
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300">
@@ -50,10 +51,20 @@ export default function AdminProLicenseCard({
           </div>
           <p className="text-xs text-gray-500 dark:text-slate-400 mt-1.5">{tx("build_type_1a0651d6")}{licenseStatus.isDockerBuild === undefined ? tx("loading_346ff60e") : licenseStatus.isDockerBuild ? tx("official_docker_image_031ab013") : tx("source_build_1b6330ce")}</p>
           <p className="text-xs text-gray-600 dark:text-slate-300/85 mt-1.5 leading-relaxed max-w-2xl">
-            {licenseStatus.isPro
-              ? text(licenseSummaryLine(licenseStatus.payload, locale))
+            {licenseStatus.isPro && payload
+              ? tx("license_customer", { v0: payload.customer, v1: payload.email })
               : tx("you_are_running_the_free_community_edition_activ_03c2d43b")}
           </p>
+          {licenseStatus.isPro && payload && <>
+            <p className="text-xs text-gray-600 dark:text-slate-300 mt-1.5">
+              {payload.expiresAt === 0 ? tx("license_permanent") : tx("license_expires", { v0: new Date(payload.expiresAt).toLocaleDateString(locale) })}
+            </p>
+            <p className="text-xs font-semibold text-gray-800 dark:text-slate-100 mt-1.5" aria-live="polite">
+              {licenseStatus.seats ? tx("license_seats_used", { v0: licenseStatus.seats.used, v1: limit }) : tx("loading_346ff60e")}
+            </p>
+            <p className="text-xs text-gray-600 dark:text-slate-300 mt-1.5">{tx("license_seats_hint", { v0: limit })}</p>
+            {licenseStatus.seats && licenseStatus.seats.used > limit && <p className="text-xs text-amber-700 dark:text-amber-300 mt-1.5">{tx("license_seats_exceeded")}</p>}
+          </>}
         </div>
       </div>
 

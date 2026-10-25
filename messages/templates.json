@@ -421,5 +421,25 @@
     "translateValues": [
       "v3"
     ]
+  },
+  {
+    "source": "账号席位已满：当前授权最多同时启用 {v0} 个账号，已启用 {v1} 个。请先禁用其他账号释放席位，或升级授权。",
+    "key": "license_seats_full_error"
+  },
+  {
+    "source": "当前已启用 {v0} 个账号，新授权最多支持 {v1} 个。请先禁用至少 {v2} 个账号，再切换授权。",
+    "key": "license_seats_switch_error"
+  },
+  {
+    "source": "许可证席位配置无效",
+    "key": "license_seats_invalid"
+  },
+  {
+    "source": "许可证档位或席位配置无效，企业版仅支持 20、50、100 席位",
+    "key": "license_tier_invalid"
+  },
+  {
+    "source": "当前授权由环境变量管理，请先移除 NAVELIX_LICENSE_KEY 再切换授权",
+    "key": "license_env_managed"
   }
 ]
