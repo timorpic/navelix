@@ -1,8 +1,7 @@
 # MEMORY.md
 
 > Navelix 的长期知识记录：只写已核实、对未来开发有持续价值的事实、约束与决策。
-> 任务目标与现场分别见 [.handoff/CONTEXT.md](.handoff/CONTEXT.md) 与 [.handoff/CHECKPOINT.md](.handoff/CHECKPOINT.md)；
-> 工作规则见 [AGENTS.md](AGENTS.md) 与 [docs/AGENT-RULES.md](docs/AGENT-RULES.md)。
+> 当前进度见 [TODO.md](TODO.md)；工作规则见 [AGENTS.md](AGENTS.md) 与 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)。
 > 每条结论应能追溯到代码、正式文档或已确认决策；未知项明确标注，不凭模板或直觉补全。
 
 ## 1. 项目概览
@@ -145,7 +144,7 @@ README 面向使用者与入口；`docs/` 面向开发与维护；仓库 `wiki/`
 
 确认依据及证据
 用户于 2026-10-24 在 agent-handoff 会话要求修复提交后反复出现未提交 Markdown 的问题，并要求同步其他项目；另确认 Navelix 旧任务已停止。
-[开发文档](docs/DEVELOPMENT.md#提交收尾与现场记录)、[接力助手](scripts/handoff.mjs) 与 [回归用例](src/lib/__tests__/handoff-helper.test.ts)。
+[开发文档](docs/DEVELOPMENT.md)。
 替代关系：替代本条原“全部接力现场及备份进 Git”的策略；历史版本保留在 Git。
 
 ---
@@ -210,14 +209,14 @@ Commit 与 PR 标题遵循 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)；
 
 ### Release
 
-- 规则：根目录 [AGENTS.md](AGENTS.md) 与 [AGENT-RULES](docs/AGENT-RULES.md) 第 18 节；格式 `vX.Y.Z`（见 DEC-001）。
+- 规则：根目录 [AGENTS.md](AGENTS.md) 与 [开发与发布](docs/DEVELOPMENT.md)；格式 `vX.Y.Z`（见 DEC-001）。
 - 基准年：`X` 初始为 1，每过自然年 +1；**2026 年对应 `X=2`**（由 `package.json` 与 tag 实测）。`X=1` 对应 2025 年，但 2025 年发版记录不在当前 git 历史内（最早提交 2026-08-21、最早 tag v2.8.7），未经远程核实，标记为**待确认**。
 - 时区：`Asia/Shanghai`（依据 tag 提交时间 `+0800` 与 compose 的 `TZ`）。
 - 正式发布渠道：GitHub Releases（`node scripts/sync-changelog.mjs --publish`）与 Docker Hub 镜像 `timorpic/navelix`。扩展使用独立 tag（如 `extension-v1.1.0`），不能套用应用版本号。
 - 版本文件与转换：Tag/Release 用 `v2.10.19`，`package.json` 用 `2.10.19`（无 v 前缀）。`node scripts/sync-version.mjs X.Y.Z` 同步 `package.json`、`Dockerfile`、`src/lib/build-info.ts`、`src/lib/admin-system.ts`；版本位置清单以该脚本的 `PATTERNS` 为准。
 - 发布顺序约束：`sync-changelog.mjs --publish` **只创建/编辑 Release，不创建 tag**；必须先 `git tag vX.Y.Z` 并推送，否则 Docker 工作流的版本一致性闸门（Release tag == `package.json` version）会失败。
 - 当月下一序号：不在此维护；每次发布前核对远程 Tag 与 Release。
-- 最近一次发版结果：见 [CHANGELOG.md](CHANGELOG.md) 与 GitHub Releases；进行中的步骤见 [.handoff/CHECKPOINT.md](.handoff/CHECKPOINT.md)。
+- 最近一次发版结果：见 [CHANGELOG.md](CHANGELOG.md) 与 GitHub Releases。
 - CI 影响：`ci.yml` 在 main push / PR 或被发布工作流调用时运行；`docker.yml` 由应用 Release 与手动触发执行候选验证，普通 push 不发布镜像；非应用 Release 跳过，预发布不提升稳定标签。
 
 ### CI/CD
@@ -244,7 +243,7 @@ Commit 与 PR 标题遵循 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)；
 - 有效处理步骤：在任何入口重写后，确认 `AGENTS.md` 仍保留 `<!-- BEGIN:nextjs-agent-rules -->` 块；发现被覆盖立即从 git 恢复，再把块补回 `AGENTS.md`。
 - 验证依据及日期：2026-10-16 阅读 `generate-agent-files.js` 源码并核对两个文件的实际内容。
 - 限制、例外与临时方案撤销条件：Next.js 升级后需重新核对该文件的行为；仅当该文件不再写入这两个文件时本条失效。
-- 主记录或详细说明入口：`node_modules/next/dist/server/lib/generate-agent-files.js`；[AGENT-RULES](docs/AGENT-RULES.md) 第 10 节。
+- 主记录或详细说明入口：`node_modules/next/dist/server/lib/generate-agent-files.js`；[开发与发布](docs/DEVELOPMENT.md)。
 - 替代关系：无。
 
 #### LES-002 wiki 有两份副本，需手工同步
@@ -323,8 +322,7 @@ Commit 与 PR 标题遵循 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)；
 - 共享记忆标签：`source:<实际写入工具>`、`project:Navelix`、`type:<标准类型>`。
 - Claude Code 使用 `source:claude-code`；Codex 使用 `source:codex`；其他工具填写真实来源，不冒充。
 - 标准类型：`decision` / `architecture` / `preference` / `milestone`。
-- 接力入口：[.handoff/CONTEXT.md](.handoff/CONTEXT.md)；检查点：[.handoff/CHECKPOINT.md](.handoff/CHECKPOINT.md)；协议：[HANDOFF.md](HANDOFF.md)。
-- 长期事实主记录：本文件；工作规则主记录：[docs/AGENT-RULES.md](docs/AGENT-RULES.md)。
+- 长期事实主记录：本文件；工作规则主记录：[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)。
 - Hindsight 是检索副本，不能替代代码、检查点、任务系统或发布状态查询；断网时本地协议照常工作。
 - 不把待办、运行现场、临时锁或原始测试日志写入本文件。
 
@@ -336,7 +334,7 @@ Commit 与 PR 标题遵循 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)；
 
 本地事实先落盘再同步；受理不等于成功，异步未确认时保持 pending。
 
-本轮上线加固的实现边界：主密钥异常失败关闭、恢复保护失败终止、管理员深度健康诊断与云备份持久化调度；说明见 docs/PRODUCTION-ACCEPTANCE.md，实际验证状态见 .handoff/CHECKPOINT.md。这些本地事实尚未同步到 OpenMemory（工具 unavailable）。
+本轮上线加固的实现边界：主密钥异常失败关闭、恢复保护失败终止、管理员深度健康诊断与云备份持久化调度；说明见 docs/PRODUCTION-ACCEPTANCE.md，实际验证状态以 GitHub Actions 运行记录为准。这些本地事实尚未同步到 OpenMemory（工具 unavailable）。
 
 用户已确认（2026-10-18）：部署保持原有 `latest` 镜像和 Watchtower 使用方式，不增加必填镜像标签变量或自动更新 profile；镜像验收门禁放在发布流水线。
 
