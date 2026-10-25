@@ -46,4 +46,4 @@
 
 真实生产主机、HTTPS 反代、外部 AI/云服务、整机灾难恢复、RPO/RTO、压力及磁盘故障演练，均不在上述通过结论内；依赖漏洞通报和完整渗透测试也未在本轮完成。Computer Use 与 OpenMemory 工具不可用，未据此补造验收或共享记忆结果。
 
-本地未执行 Docker 构建；镜像构建、验证和推送全部由 GitHub Actions 完成。过程、run ID 和结果边界见 [.handoff/CHECKPOINT.md](../.handoff/CHECKPOINT.md)。后续现场验收应在独立环境记录数据规模、目标阈值、实际结果及证据，再决定具体生产环境的放行范围。
+本地未执行 Docker 构建；镜像构建、验证和推送全部由 GitHub Actions 完成。过程、run ID 和结果边界以 GitHub Actions 运行记录为准。后续现场验收应在独立环境记录数据规模、目标阈值、实际结果及证据，再决定具体生产环境的放行范围。

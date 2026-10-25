@@ -51,7 +51,6 @@ CI 配置见 `.github/workflows/ci.yml`，镜像发布与冒烟测试见 `.githu
 
 ## Git 工作流
 
-本项目采用 agent-handoff 本次 Git 规范更新；通用协议正文及其版本保持原样，
 本节是项目 Git 流程的主记录。依据：用户于 2026-10-23 要求同步 Git 规范，并于 2026-10-24 确认整合 Git Flow 的分支流向、发布冻结与修复回流。
 本次采用规则，不代表已提交代码、执行 CI 或修改远程仓库设置。
 
@@ -70,7 +69,7 @@ CI 配置见 `.github/workflows/ci.yml`，镜像发布与冒烟测试见 `.githu
 - 保持提交原子化，每次提交解决清晰的问题，不提交占位实现或无关生成文件。
 - 提交前检查 `git status`、`git diff` 与暂存区差异，只暂存本任务相关变更。
 - Commit 与 PR 标题统一采用 `type(scope): 描述`，scope 可省略；
-  例如 `feat(handoff): 增加交接预览`、`fix: 修复接管校验错误`。
+  例如 `feat(workspace): 增加工作区预览`、`fix: 修复接管校验错误`。
 - type 使用 feat、fix、docs、refactor、test、ci、build、chore、perf、style，按变更主要意图选择；style 仅用于代码格式，界面功能变化按 feat 或 fix 分类。
 - 不兼容变更采用 `type(scope)!: 描述`，在正文说明影响与迁移方式；
   该标记不改变本项目既有的版本编号，也不自动授权破坏兼容性。
@@ -199,16 +198,8 @@ node scripts/sync-changelog.mjs --print
 
 构建入口先清理旧 standalone。当前 Next.js 的 instrumentation trace 不应用路由排除规则，入口会在构建后移除生成产物中的运行数据副本及其 trace 引用，并拒绝仍含主密钥、运行数据库或初始密码文件的产物；检查不读取密钥内容。
 
-## 提交收尾与现场记录
+## 提交收尾
 
 - 在提交前完成必要的正式文档、TODO、长期事实和待发布说明；没有相应变化时不机械改写。
-- 提交后的 HEAD、提交/推送结果与临时进度只写入已被忽略且未被跟踪的活动接力记录，不为回填“已提交”再次修改 MEMORY、TODO、CHANGELOG 或规则入口。
-- 活动 CONTEXT、CHECKPOINT、直接前一版和新运行备份不进 Git；正式冻结归档、验证证据及已跟踪的历史不可变备份保留。跨机接力须按 HANDOFF 人工传递必要的本地现场；新克隆缺少活动记录时按当前需求重建。
-- `.gitignore` 对已跟踪文件无效。先核对内容与差异，再取消活动记录的跟踪并保留本地内容；不忽略正式文档、不自动 stash/reset/clean 或补提交来掩盖问题。
-- 接力助手写入前检查活动记录和直接前一版的跟踪状态，发现仍被跟踪就拒绝写入且不改变暂存区。提交后复核 Git 状态，区分原有修改与本次遗留。
-
-
-## AI 研发治理
-
-见 [研发治理与任务契约](AI-GOVERNANCE.md)。采用独立契约和只读范围检查，不改写本项目协议正文或业务验证命令。
-新增 AI Governance 工作流中的 `governance-checks` 与 `task-scope`，保留既有业务与发布检查。远程必需状态及保护以实际查询结果为准，文件更新不代表已启用。
+- 不为回填“已提交”再次修改 MEMORY、TODO、CHANGELOG 或规则入口。
+- 不忽略正式文档、不自动 stash/reset/clean 或补提交来掩盖问题。提交后复核 Git 状态，区分原有修改与本次遗留。

@@ -7,28 +7,23 @@
 > 需要构建时用 `gh workflow run <workflow>`，不得为了发布前验证在本机运行。
 > 该禁令由三层强制：全局指令文件 + 各运行时的 PreToolUse/tool_call 拦截 + 本文件。
 
-本文件是本仓库的启动入口：提供读取要求、项目事实来源与必守边界。适用于人工贡献者及编码助手。通用详细工作规则统一维护在 [docs/AGENT-RULES.md](docs/AGENT-RULES.md)，工具入口（[CLAUDE.md](CLAUDE.md)、[adapters/ENTRY.md](adapters/ENTRY.md)）只引用，不复制正文。
+本文件是本仓库的启动入口：提供读取要求、项目事实来源与必守边界。适用于人工贡献者及编码助手。详细规范维护在 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) 与各专题文档，工具入口（[CLAUDE.md](CLAUDE.md)）只引用，不复制正文。
 
 ## 开始任务
 
 1. 核对实际项目根目录，遵循适用的上层及局部规则。
-2. 首次进入项目先读取 [docs/AGENT-RULES.md](docs/AGENT-RULES.md) 第 1–14 节；本会话已读且未变化时无需重复。
-3. 读取 [MEMORY.md](MEMORY.md)、[.handoff/CONTEXT.md](.handoff/CONTEXT.md) 和 [.handoff/CHECKPOINT.md](.handoff/CHECKPOINT.md)（如存在），确认项目身份、目标与实际现场。
-4. 开始新任务、接手或作关键决策前，读取详细规则第 17 节，按稳定 project_id 及相关主题召回 OpenMemory；核对标签与本地依据，不导入其他项目事实。工具不可用或无匹配时说明限制，继续依据本地资料工作。
-5. 按下表读取本次适用章节和相关正式文档，再修改代码。按章节读取；输出被截断时继续补读，不默认将整本详细规则或全部历史一次加载。
-6. 长任务在可恢复的小步骤后更新检查点；交接、接管与异常恢复遵循 [HANDOFF.md](HANDOFF.md) 与详细规则第 19 节。需要机读现场或自动备份时，用 [接力助手](docs/HANDOFF-HELPER.md)（`node scripts/handoff.mjs inspect|claim|save`）。
-
-7. 涉及新功能、修复、文档或 Git 交付时，读取 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)，遵循本项目分支、PR 与审查约定。
+2. 读取 [MEMORY.md](MEMORY.md)、[TODO.md](TODO.md)，确认项目身份、当前目标与实际状态。
+3. 按下表读取本次适用章节和相关正式文档，再修改代码。按章节读取；输出被截断时继续补读，不默认将全部文档一次加载。
+4. 涉及新功能、修复、文档或 Git 交付时，读取 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)，遵循本项目分支、PR 与审查约定。
 
 ## 按任务读取
 
 | 情况 | 必须读取 |
 | --- | --- |
-| 新项目或重大功能 | 详细规则第 15 节及 [产品规格](docs/PROJECT-SPEC.md) |
-| UI、图标或视觉调整 | 详细规则第 6、16 节及 [DESIGN.md](DESIGN.md) |
-| 共享记忆、长期知识整理 | 详细规则第 13、17 节及 [MEMORY.md](MEMORY.md) |
-| 版本、Tag、Release 或部署 | 详细规则第 18 节及 [开发与发布](docs/DEVELOPMENT.md)、[构建与部署](docs/DEPLOYMENT.md) |
-| 初始化、接管、交接或异常恢复 | 详细规则第 19 节及 [HANDOFF.md](HANDOFF.md)、[接力助手](docs/HANDOFF-HELPER.md)；提示词见 [PROMPTS.md](PROMPTS.md) |
+| 新项目或重大功能 | [产品规格](docs/PROJECT-SPEC.md)、[架构说明](docs/ARCHITECTURE.md) |
+| UI、图标或视觉调整 | [DESIGN.md](DESIGN.md)、[组件规范](docs/COMPONENT-GUIDELINES.md) |
+| 长期知识整理 | [MEMORY.md](MEMORY.md) |
+| 版本、Tag、Release 或部署 | [开发与发布](docs/DEVELOPMENT.md)、[构建与部署](docs/DEPLOYMENT.md) |
 
 ## 项目与事实来源
 
@@ -102,10 +97,3 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 <!-- END:nextjs-agent-rules -->
 
 提交收尾与活动接力记录的 Git 归属遵循 [开发文档](docs/DEVELOPMENT.md#提交收尾与现场记录)；提交后仅回填忽略的现场记录，避免正式文档反复出现未提交改动。
-
-
-## 研发治理
-
-修改前读取 [本项目研发治理](docs/AI-GOVERNANCE.md)，按 `.ai/templates/task.json` 为实际任务建立 `.ai/tasks/<task_id>.json`；契约不产生新授权。
-遵循事实证据分级、变更范围与交付标准，保留项目原有规则、接力与长期记录职责。
-PR 正文提供唯一 Task-Contract 行，通过独立范围检查与项目原有适用检查后再合并。
