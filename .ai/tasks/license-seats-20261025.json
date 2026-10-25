@@ -27,7 +27,8 @@
     "package.json",
     "Dockerfile",
     "src/lib/build-info.ts",
-    "src/lib/admin-system.ts"
+    "src/lib/admin-system.ts",
+    "src/lib/__tests__/ee-gate.test.ts"
   ],
   "forbidden_paths": [
     ".env",

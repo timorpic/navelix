@@ -1,6 +1,7 @@
-import { describe, it } from "node:test";
+import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
+import { db } from "../db.ts";
 import {
   verifyLicenseKey,
   saveLicenseKey,
@@ -11,6 +12,17 @@ import {
 import { registerEEDrivers } from "../ee-bridge/index.ts";
 
 describe("Navelix Pro Offline License & Cryptographic Verification", () => {
+  // The CI suite shares its temporary database across files. Keep this fixture
+  // within the Pro quota without deleting unrelated accounts, then restore them.
+  let excessAccounts: { id: string }[] = [];
+  before(() => {
+    excessAccounts = (db.prepare("SELECT id FROM users WHERE disabled = 0 ORDER BY id").all() as { id: string }[]).slice(2);
+    for (const { id } of excessAccounts) db.prepare("UPDATE users SET disabled = 1 WHERE id = ?").run(id);
+  });
+  after(() => {
+    for (const { id } of excessAccounts) db.prepare("UPDATE users SET disabled = 0 WHERE id = ?").run(id);
+  });
+
   // 测试套件在内存中动态生成临时 Ed25519 密钥对，杜绝任何真实发牌私钥泄露
   const { publicKey: testPublicKey, privateKey: testPrivateKey } = crypto.generateKeyPairSync("ed25519", {
     publicKeyEncoding: { type: "spki", format: "pem" },
@@ -112,7 +124,7 @@ describe("Navelix Pro Offline License & Cryptographic Verification", () => {
 
     const partialToken = issueTestToken(partialPayload);
     const saveRes = saveLicenseKey(partialToken);
-    assert.equal(saveRes.valid, true);
+    assert.equal(saveRes.valid, true, saveRes.error);
 
     status = getLicenseStatus();
     assert.equal(status.isPro, true);

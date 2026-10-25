@@ -1,6 +1,7 @@
-import { describe, it, after } from "node:test";
+import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
+import { db } from "../db.ts";
 import { applyEEGateToConfig, getProFeatureFlags } from "../ee-gate.ts";
 import { saveLicenseKey, removeLicenseKey } from "../license.ts";
 import { registerEEDrivers } from "../ee-bridge/index.ts";
@@ -15,6 +16,17 @@ import type { SystemConfig } from "@/types";
  * 确保 CE 与 Pro 两种状态下行为符合预期。
  */
 describe("EE Gate (Pro 特性门禁)", () => {
+  // The CI suite shares its temporary database across files. Keep this fixture
+  // within the Pro quota without deleting unrelated accounts, then restore them.
+  let excessAccounts: { id: string }[] = [];
+  before(() => {
+    excessAccounts = (db.prepare("SELECT id FROM users WHERE disabled = 0 ORDER BY id").all() as { id: string }[]).slice(2);
+    for (const { id } of excessAccounts) db.prepare("UPDATE users SET disabled = 1 WHERE id = ?").run(id);
+  });
+  after(() => {
+    for (const { id } of excessAccounts) db.prepare("UPDATE users SET disabled = 0 WHERE id = ?").run(id);
+  });
+
   const { publicKey: testPublicKey, privateKey: testPrivateKey } =
     crypto.generateKeyPairSync("ed25519", {
       publicKeyEncoding: { type: "spki", format: "pem" },
@@ -91,7 +103,7 @@ describe("EE Gate (Pro 特性门禁)", () => {
     const saveRes = saveLicenseKey(
       issueTestToken(["brand_customization", "custom_code_injection", "link_status_monitor"]),
     );
-    assert.equal(saveRes.valid, true, "测试 License 应验签通过");
+    assert.equal(saveRes.valid, true, saveRes.error || "测试 License 应验签通过");
 
     const flags = getProFeatureFlags();
     assert.equal(flags.hasCodeInject, true);
