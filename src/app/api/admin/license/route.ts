@@ -1,3 +1,5 @@
+import { enabledAccountCount } from "@/lib/license-seat-store";
+import { licenseSeatLimit } from "@/lib/license-seats";
 import { auditedTransaction } from "@/lib/logging/transaction";
 import { recordAuditLog } from "@/lib/audit";
 import { withRequestLogging } from "@/lib/logging/request";
@@ -25,6 +27,7 @@ async function GETHandler() {
   const buildInfo = getBuildInfo();
   return localizedJson({
     ...status,
+    seats: status.isPro && status.payload ? { used: enabledAccountCount(), limit: licenseSeatLimit(status.payload) } : undefined,
     machineFingerprint,
     isDockerBuild: buildInfo.isDockerBuild,
     eeDriverStatus: getEEDriverStatus(),
@@ -57,7 +60,12 @@ async function POSTHandler(req: NextRequest) {
     );
   }
 
-  auditedTransaction(() => { saveLicenseKey(key); recordAuditLog({ userId: user.id, action: "license.activated" }); });
+  const saved = auditedTransaction(() => {
+    const result = saveLicenseKey(key);
+    if (result.valid) recordAuditLog({ userId: user.id, action: "license.activated" });
+    return result;
+  });
+  if (!saved.valid) return localizedJson({ error: saved.error }, { status: 409 });
 
   const status = getLicenseStatus();
   const buildInfo = getBuildInfo();
@@ -65,6 +73,7 @@ async function POSTHandler(req: NextRequest) {
   return localizedJson({
     success: true,
     ...status,
+    seats: status.isPro && status.payload ? { used: enabledAccountCount(), limit: licenseSeatLimit(status.payload) } : undefined,
     machineFingerprint: getMachineFingerprint(),
     isDockerBuild: buildInfo.isDockerBuild,
     eeDriverStatus: getEEDriverStatus(),

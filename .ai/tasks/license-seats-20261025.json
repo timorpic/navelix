@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task_id": "license-seats-20261025",
+  "goal": "按 Pro 1–2（最多2）及企业20/50/100席位限制启用账号，授权卡展示实际档位及使用量；按用户追加授权提交、PR、CI后合并并发布正式Release",
+  "allowed_paths": [
+    ".ai/tasks/license-seats-20261025.json",
+    "src/lib/license-seats.ts",
+    "src/lib/license-seat-store.ts",
+    "src/lib/license.ts",
+    "src/lib/admin-users.ts",
+    "src/lib/admin-pro.ts",
+    "src/lib/__tests__/license-seats.test.ts",
+    "src/lib/__tests__/license.test.ts",
+    "src/lib/__tests__/admin-pro.test.ts",
+    "src/app/api/admin/license/route.ts",
+    "src/app/api/admin/users/route.ts",
+    "src/app/api/auth/register/route.ts",
+    "src/app/(app)/admin/components/admin-pro-license-card.tsx",
+    "src/hooks/use-admin-license.ts",
+    "messages/zh-CN.json",
+    "messages/en.json",
+    "messages/templates.json",
+    "docs/PROJECT-SPEC.md",
+    "CHANGELOG.md",
+    ".handoff/archive/pro-license-file-20261025/CONTEXT.md",
+    ".handoff/archive/pro-license-file-20261025/CHECKPOINT.md",
+    "package.json",
+    "Dockerfile",
+    "src/lib/build-info.ts",
+    "src/lib/admin-system.ts",
+    "src/lib/__tests__/ee-gate.test.ts"
+  ],
+  "forbidden_paths": [
+    ".env",
+    ".env.local",
+    "data/**",
+    "ee/**"
+  ],
+  "constraints": {
+    "allow_new_dependencies": false,
+    "allow_database_changes": false,
+    "allow_api_breaking_changes": false,
+    "allow_unrelated_refactor": false
+  },
+  "acceptance": [
+    "注册、管理员创建与重新启用在事务中检查席位，禁用账号不占位",
+    "切换授权超额时拒绝保存，不自动禁用账号",
+    "卡片按实际授权展示档位、期限与席位使用量，中英文一致",
+    "本机仅静态检查；回归用例交由 CI 执行"
+  ]
+}

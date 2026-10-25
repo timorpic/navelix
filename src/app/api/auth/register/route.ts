@@ -1,3 +1,4 @@
+import { assertAccountSeatAvailable } from "@/lib/license-seat-store";
 import { recordAuditLog } from "@/lib/audit";
 import { withRequestLogging } from "@/lib/logging/request";
 import { getLocale } from "next-intl/server";
@@ -80,6 +81,7 @@ async function POSTHandler(req: Request) {
         throw Object.assign(new Error("系统当前已关闭新用户注册，请联系管理员"), { status: 403 });
       }
 
+      assertAccountSeatAvailable();
       const role = count === 0 ? "admin" : "user";
       db.prepare(
         "INSERT INTO users (id, username, password_hash, display_name, role, avatar, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",

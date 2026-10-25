@@ -107,6 +107,12 @@ export function useAdminLicense({
     });
   }, [fetchLicense]);
 
+  useEffect(() => {
+    const refresh = () => { void fetchLicense(); };
+    window.addEventListener("focus", refresh);
+    return () => window.removeEventListener("focus", refresh);
+  }, [fetchLicense]);
+
   const openLicenseModal = useCallback(() => setLicenseModalOpen(true), []);
   const closeLicenseModal = useCallback(() => {
     fileReadVersion.current += 1;

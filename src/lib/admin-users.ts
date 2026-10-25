@@ -1,5 +1,6 @@
 import { logContext } from "./logging/context.ts";
 import { recordAuditLog } from "./audit.ts";
+import { assertAccountSeatAvailable } from "./license-seat-store.ts";
 import { db } from "./db.ts";
 
 /**
@@ -114,6 +115,7 @@ export function updateUser(
     if (target.role === "admin" && !target.disabled && (nextRole !== "admin" || nextDisabled) && adminCount() <= 1) {
       throw new UserUpdateError("不能停用或降级最后一个可用管理员");
     }
+    if (target.disabled && input.disabled === false) assertAccountSeatAvailable();
     if (typeof input.username === "string") {
       const newUsername = input.username.trim().toLowerCase();
       if (!/^[a-z0-9_]{3,20}$/.test(newUsername)) {

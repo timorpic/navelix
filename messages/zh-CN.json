@@ -1584,5 +1584,22 @@
   "license_file_invalid_extension": "请选择 .swlicense 授权文件。",
   "license_file_too_large": "授权文件不能超过 64 KiB。",
   "license_file_empty": "授权文件为空，请重新选择。",
-  "license_file_read_failed": "无法读取授权文件，请重试或手动粘贴 License Key。"
+  "license_file_read_failed": "无法读取授权文件，请重试或手动粘贴 License Key。",
+  "license_team_title": "团队企业版 · {v0} 席位",
+  "license_lifetime_title": "Pro 终身版",
+  "license_annual_title": "Pro 年度版",
+  "license_enterprise_active": "已激活 · 企业授权",
+  "license_lifetime_active": "已激活 · 永久授权",
+  "license_annual_active": "已激活 · 年度授权",
+  "license_customer": "授权客户：{v0}（{v1}）",
+  "license_permanent": "有效期：永久有效",
+  "license_expires": "有效期至：{v0}",
+  "license_seats_used": "账号席位：已启用 {v0} / {v1}",
+  "license_seats_hint": "最多同时启用 {v0} 个账号；禁用账号不占席位",
+  "license_seats_exceeded": "已启用账号超出授权上限，请先禁用多余账号释放席位。",
+  "license_seats_full_error": "账号席位已满：当前授权最多同时启用 {v0} 个账号，已启用 {v1} 个。请先禁用其他账号释放席位，或升级授权。",
+  "license_seats_switch_error": "当前已启用 {v0} 个账号，新授权最多支持 {v1} 个。请先禁用至少 {v2} 个账号，再切换授权。",
+  "license_seats_invalid": "许可证席位配置无效",
+  "license_tier_invalid": "许可证档位或席位配置无效，企业版仅支持 20、50、100 席位",
+  "license_env_managed": "当前授权由环境变量管理，请先移除 NAVELIX_LICENSE_KEY 再切换授权"
 }

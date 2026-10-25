@@ -1584,5 +1584,22 @@
   "license_file_invalid_extension": "Please select a .swlicense license file.",
   "license_file_too_large": "License files must not exceed 64 KiB.",
   "license_file_empty": "The license file is empty. Please select another file.",
-  "license_file_read_failed": "Could not read the license file. Try again or paste the License Key manually."
+  "license_file_read_failed": "Could not read the license file. Try again or paste the License Key manually.",
+  "license_team_title": "Team Enterprise · {v0} seats",
+  "license_lifetime_title": "Pro Lifetime",
+  "license_annual_title": "Pro Annual",
+  "license_enterprise_active": "Activated · Enterprise license",
+  "license_lifetime_active": "Activated · Lifetime license",
+  "license_annual_active": "Activated · Annual license",
+  "license_customer": "Licensed to: {v0} ({v1})",
+  "license_permanent": "Validity: Lifetime",
+  "license_expires": "Valid until: {v0}",
+  "license_seats_used": "Account seats: {v0} / {v1} enabled",
+  "license_seats_hint": "Enable up to {v0} accounts; disabled accounts do not use seats",
+  "license_seats_exceeded": "Enabled accounts exceed the license limit. Disable excess accounts to release seats.",
+  "license_seats_full_error": "Account seats are full: this license supports {v0} enabled accounts and {v1} are enabled. Disable another account to release a seat, or upgrade your license.",
+  "license_seats_switch_error": "There are {v0} enabled accounts, but the new license supports {v1}. Disable at least {v2} accounts before switching licenses.",
+  "license_seats_invalid": "Invalid license seat configuration",
+  "license_tier_invalid": "Invalid license tier or seat configuration. Enterprise licenses support only 20, 50, or 100 seats.",
+  "license_env_managed": "The license is managed by an environment variable. Remove NAVELIX_LICENSE_KEY before switching licenses."
 }

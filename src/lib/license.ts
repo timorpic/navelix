@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { licenseSeatLimit } from "./license-seats.ts";
 import { db } from "./db.ts";
 import { getMachineFingerprint } from "./fingerprint.ts";
 import { getOfficialEELicenseKey, isEEAvailable } from "./ee-bridge/index.ts";
@@ -117,6 +118,8 @@ function verifyLicenseKeyUncached(token: string): LicenseVerificationResult {
       return { valid: false, payload, error: "数字签名无效或已被篡改" };
     }
 
+    try { licenseSeatLimit(payload); }
+    catch (error) { return { valid: false, error: error instanceof Error ? error.message : "许可证席位配置无效" }; }
     return { valid: true, payload };
   } catch (err) {
     return {
@@ -245,13 +248,28 @@ export function saveLicenseKey(key: string): LicenseVerificationResult {
     return res;
   }
 
-  db.prepare(`
-    INSERT INTO system_settings (key, value, updated_at)
-    VALUES ('license_key', ?, ?)
-    ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
-  `).run(trimmed, Date.now());
-
-  return res;
+  if (process.env.NAVELIX_LICENSE_KEY?.trim()) {
+    return { valid: false, error: "当前授权由环境变量管理，请先移除 NAVELIX_LICENSE_KEY 再切换授权" };
+  }
+  db.exec("SAVEPOINT license_activation");
+  try {
+    const limit = licenseSeatLimit(res.payload!);
+    const used = (db.prepare("SELECT COUNT(*) AS count FROM users WHERE disabled = 0").get() as { count: number }).count;
+    if (used > limit) {
+      db.exec("ROLLBACK TO license_activation; RELEASE license_activation");
+      return { valid: false, error: `当前已启用 ${used} 个账号，新授权最多支持 ${limit} 个。请先禁用至少 ${used - limit} 个账号，再切换授权。` };
+    }
+    db.prepare(`
+      INSERT INTO system_settings (key, value, updated_at)
+      VALUES ('license_key', ?, ?)
+      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
+    `).run(trimmed, Date.now());
+    db.exec("RELEASE license_activation");
+    return res;
+  } catch (error) {
+    db.exec("ROLLBACK TO license_activation; RELEASE license_activation");
+    throw error;
+  }
 }
 
 /**

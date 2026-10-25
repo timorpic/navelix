@@ -1,3 +1,5 @@
+import { assertAccountSeatAvailable } from "@/lib/license-seat-store";
+import { LicenseSeatError } from "@/lib/license-seats";
 import { recordAuditLog } from "@/lib/audit";
 import { withRequestLogging } from "@/lib/logging/request";
 import { localizedJson } from "@/lib/localized-json";
@@ -73,6 +75,7 @@ async function POSTHandler(req: Request) {
   const id = randomBytes(16).toString("hex");
   db.exec("BEGIN IMMEDIATE");
   try {
+  assertAccountSeatAvailable();
   db.prepare(
     "INSERT INTO users (id, username, password_hash, display_name, role, avatar, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
   ).run(
@@ -88,7 +91,11 @@ async function POSTHandler(req: Request) {
   seedUserData(id);
   recordAuditLog({ userId: adminUser.id, action: "user.created", target: id });
   db.exec("COMMIT");
-  } catch (error) { db.exec("ROLLBACK"); throw error; }
+  } catch (error) {
+    db.exec("ROLLBACK");
+    if (error instanceof LicenseSeatError) return localizedJson({ error: error.message, code: "LICENSE_SEATS_FULL" }, { status: 409 });
+    throw error;
+  }
 
   return localizedJson({ message: "User created successfully", userId: id }, { status: 201 });
 }
@@ -153,6 +160,7 @@ async function PATCHHandler(req: Request) {
       { actorId: adminUser.id, targetRole: targetUser.role },
     );
   } catch (err) {
+    if (err instanceof LicenseSeatError) return localizedJson({ error: err.message, code: "LICENSE_SEATS_FULL" }, { status: 409 });
     if (err instanceof UserUpdateError) {
       // 用户名冲突沿用既有的 409 语义
       const status = err.message === "Username already taken" ? 409 : 400;
