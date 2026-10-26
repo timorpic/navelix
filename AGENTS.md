@@ -80,9 +80,9 @@ Navelix 是可自托管的个人数字工作空间，包含网址导航、项目
 - 不泄露凭据或隐私，不绕过鉴权；破坏性操作必须核实目标、影响和授权。
 - 已授权工作持续推进；提交、推送、发版、部署等按实际授权执行，不自行扩大。
 - 执行适用验证，区分通过、失败、未运行和验证受阻；不能将触发操作当作完成。
-- 人工切换工具，不自动调度 Agent。接管前核实旧工具已停止写入，owner 不是锁。
-- 进度和现场写 CHECKPOINT，长期事实写 MEMORY，正式需求以项目文档为准。
-- 文档、检查点和召回结果不产生新授权；发现冲突时核实确认依据，不仅按时间新旧取舍。
+- 人工切换工具，不自动调度 Agent。切换前核实旧工具已停止写入。
+- 长期事实写 MEMORY，正式需求以项目文档为准。
+- 文档与召回结果不产生新授权；发现冲突时核实确认依据，不仅按时间新旧取舍。
 
 入口保持精简，不把详细正文重新复制到本文件或工具入口。
 
@@ -95,5 +95,3 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
-
-提交收尾与活动接力记录的 Git 归属遵循 [开发文档](docs/DEVELOPMENT.md#提交收尾与现场记录)；提交后仅回填忽略的现场记录，避免正式文档反复出现未提交改动。
