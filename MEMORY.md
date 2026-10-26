@@ -182,7 +182,7 @@ AI（OpenAI 兼容）、天气、云存储、链接探针均可能访问外部�
 
 主干 `main`；变更使用用途前缀短期分支并通过 PR，具体规范见 [DEVELOPMENT](docs/DEVELOPMENT.md#git-工作流)。用户于 2026-10-23 确认同步模板 Git 规范，替代旧的默认 `codex/` 前缀。用户于 2026-10-18 确认个人维护模式：main 要求两个现有 GitHub Actions CI 检查、分支保持最新和讨论解决，审批人数 0；管理员同样受约束，禁止强推及删除。实际已通过 GitHub API 设置并回读确认，详见 [DEVELOPMENT](docs/DEVELOPMENT.md)「main 分支保护」。
 
-用户于 2026-10-20 确认：每次 PR 合入 `main` 后，清理对应本地与远程分支及失效远程引用；先核对合并结果、未提交修改与工作树占用，保留未合并工作。GitHub 的 `delete_branch_on_merge` 已启用（当日 API 回读确认）。共享记忆同步 unavailable，以本地记录为准。
+用户于 2026-10-20 确认：每次 PR 合入 `main` 后，清理对应本地与远程分支及失效远程引用；先核对合并结果、未提交修改与工作树占用，保留未合并工作。GitHub 的 `delete_branch_on_merge` 已启用（当日 API 回读确认）。
 
 ### Commit 规范
 
@@ -210,7 +210,7 @@ Commit 与 PR 标题遵循 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)；
 
 #### 测试与构建数据隔离
 
-历史上裸 Node 测试与 Next 构建会打开默认业务目录。当前脚本已改为 `scripts/run-isolated.mjs`，每次强制创建一次性目录，结束后清理；不继承业务数据路径和生产密钥。直接执行底层命令仍会绕过保护。构建后清理 instrumentation trace 引入的运行数据副本，并检查敏感运行文件不进入 standalone。实现改动与本次验证状态见当前检查点，不能继承历史全量测试结论。
+历史上裸 Node 测试与 Next 构建会打开默认业务目录。当前脚本已改为 `scripts/run-isolated.mjs`，每次强制创建一次性目录，结束后清理；不继承业务数据路径和生产密钥。直接执行底层命令仍会绕过保护。构建后清理 instrumentation trace 引入的运行数据副本，并检查敏感运行文件不进入 standalone。实现改动与本次验证状态以对应 PR 与实际 CI 运行记录为准，不能继承历史全量测试结论。
 
 ---
 
@@ -296,26 +296,13 @@ Commit 与 PR 标题遵循 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)；
 
 ---
 
-## 13. 跨工具身份与记忆索引
+## 13. 项目身份与长期事实索引
 
 - 稳定 project_id：**Navelix**（取目标仓库名，非模板目录名；仓库标识 `timorpic/Navelix`）。
-- 共享 Bank：OpenMemory（已核对连接可用）。
-- 共享记忆标签：`source:<实际写入工具>`、`project:Navelix`、`type:<标准类型>`。
-- Claude Code 使用 `source:claude-code`；Codex 使用 `source:codex`；其他工具填写真实来源，不冒充。
-- 标准类型：`decision` / `architecture` / `preference` / `milestone`。
 - 长期事实主记录：本文件；工作规则主记录：[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)。
-- Hindsight 是检索副本，不能替代代码、检查点、任务系统或发布状态查询；断网时本地协议照常工作。
 - 不把待办、运行现场、临时锁或原始测试日志写入本文件。
 
-### 共享同步索引
-
-| 条目 ID | 本地主记录定位 | 有效状态 | 替代关系 | 同步状态 | 服务返回标识（如有） |
-| --- | --- | --- | --- | --- | --- |
-| MS-001 | 本文件第 13 节（文档 SSOT 分工）与第 4 节 DEC-001–003 | 有效（2026-10-16） | 无 | synced（2026-10-16 已确认存储完成） | `8cd96bf2-f3c8-4646-be69-8dcc4b89e08f` 等 12 条 |
-
-本地事实先落盘再同步；受理不等于成功，异步未确认时保持 pending。
-
-本轮上线加固的实现边界：主密钥异常失败关闭、恢复保护失败终止、管理员深度健康诊断与云备份持久化调度；说明见 docs/PRODUCTION-ACCEPTANCE.md，实际验证状态以 GitHub Actions 运行记录为准。这些本地事实尚未同步到 OpenMemory（工具 unavailable）。
+本轮上线加固的实现边界：主密钥异常失败关闭、恢复保护失败终止、管理员深度健康诊断与云备份持久化调度；说明见 docs/PRODUCTION-ACCEPTANCE.md，实际验证状态以 GitHub Actions 运行记录为准。
 
 用户已确认（2026-10-18）：部署保持原有 `latest` 镜像和 Watchtower 使用方式，不增加必填镜像标签变量或自动更新 profile；镜像验收门禁放在发布流水线。
 
