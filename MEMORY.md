@@ -81,19 +81,19 @@ OpenAI 兼容 AI 接口、天气、S3/WebDAV 云容灾、外部链接探针（�
 
 > 只记录重要且长期有效的决策；详细理由引用正式文档，不在此复制全文。
 
-#### DEC-001 版本号采用「年度.月份.当月序号」而非语义化版本（2026-10-15 复核确认；2026-10-29 按 AGENTS.md 修订当月序号规则）
+#### DEC-001 版本号采用「年度.月份.当月序号」而非语义化版本（2026-10-15 复核确认；2026-10-29 修订：月份与序号不补前导零）
 
 背景
 需要一套与发布时间强对应、能直接从版本号读出年月的编号规则；版本号不表达兼容性。
 
 决定
-`N.XX.MM`：`N` 为年度主版本，初始为 1、每过一个自然年 `+1`；`XX` 为两位月份；`MM` 为该自然月内发布序号，两位数字，当月从 `01` 起递增。Tag 加 `v` 前缀（`v2.10.19`），`package.json` 不带（`2.10.19`）。
+`N.M.S`：`N` 为年度主版本，初始为 1、每过一个自然年 `+1`；`M` 为月份（`1`～`12`），不补前导零；`S` 为该自然月内发布序号，当月从 `1` 起递增，不补前导零。Tag 加 `v` 前缀（`v2.10.19`），`package.json` 不带（`2.10.19`）。
 
 原因
 便于按时间定位版本；避免 SemVer 兼容性承诺与实际发布节奏绑定。
 
 影响
-破坏性变更必须在 Release Notes 明确标注；发版前须核对远程已有 tag 确定当月序号。当月序号为两位数字、自 `01` 起算，与根目录 [AGENTS.md](AGENTS.md) 一致。
+破坏性变更必须在 Release Notes 明确标注；发版前须核对远程已有 tag 确定当月序号。当月序号自 `1` 起算、不补前导零，版本号须符合 SemVer，与根目录 [AGENTS.md](AGENTS.md) 一致。
 
 确认依据及证据
 根目录 [AGENTS.md](AGENTS.md) 的版本号规则；`package.json`、`CHANGELOG.md`、tag 历史（v2.8.7 → v2.10.19）。
@@ -190,7 +190,7 @@ Commit 与 PR 标题遵循 [Git 工作流](docs/DEVELOPMENT.md#git-工作流)；
 
 ### Release
 
-- 规则：根目录 [AGENTS.md](AGENTS.md) 与 [开发与发布](docs/DEVELOPMENT.md)；格式 `vN.XX.MM`（见 DEC-001）。
+- 规则：根目录 [AGENTS.md](AGENTS.md) 与 [开发与发布](docs/DEVELOPMENT.md)；格式 `vN.M.S`（见 DEC-001）。
 - 基准年：`X` 初始为 1，每过自然年 +1；**2026 年对应 `X=2`**（由 `package.json` 与 tag 实测）。`X=1` 对应 2025 年，但 2025 年发版记录不在当前 git 历史内（最早提交 2026-08-21、最早 tag v2.8.7），未经远程核实，标记为**待确认**。
 - 时区：`Asia/Shanghai`（依据 tag 提交时间 `+0800` 与 compose 的 `TZ`）。
 - 正式发布渠道：GitHub Releases（`node scripts/sync-changelog.mjs --publish`）与 Docker Hub 镜像 `timorpic/navelix`。扩展使用独立 tag（如 `extension-v1.1.0`），不能套用应用版本号。
