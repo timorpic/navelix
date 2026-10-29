@@ -3,7 +3,7 @@
 本项目所有值得注意的变更都会记录在此文件中。
 
 - 格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)
-- 版本号采用「年度序号.月份.当月发布序号」，当月序号从 0 开始，不表达兼容性；规则见 [AGENTS.md](AGENTS.md)。
+- 版本号采用「年度序号.月份.当月发布序号」，当月序号为两位数字、自 01 起算，不表达兼容性；规则见 [AGENTS.md](AGENTS.md)。
 - 发版时将对应章节同步到 GitHub Release：`node scripts/sync-changelog.mjs --publish`
 
 > 说明：仓库自 **v2.8.7** 起才有 tag 记录，更早的 v2.8.1 – v2.8.6 已并入文末「早期版本」一节。
