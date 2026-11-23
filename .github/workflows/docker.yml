@@ -24,9 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     env:
       HAS_EE_BUNDLE: ${{ secrets.EE_COMMERCIAL_BUNDLE != '' }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -62,24 +63,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Lowercase repository name
-        id: repo_name
-        run: |
-          echo "repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v6
         with:
           images: |
-            ghcr.io/${{ steps.repo_name.outputs.repo }}
+            docker.io/${{ env.DOCKERHUB_USERNAME }}/navelix
           tags: |
             type=raw,value=candidate-${{ github.run_id }}-${{ github.run_attempt }}
 
@@ -121,19 +116,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     steps:
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
 
       - name: Run container and verify health & features
         run: |
-          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME="docker.io/${DOCKERHUB_USERNAME}/navelix"
           IMAGE_TAG="${IMAGE_NAME}@${{ needs.build.outputs.digest }}"
 
           echo "Pulling image ${IMAGE_TAG}..."
@@ -243,7 +239,7 @@ jobs:
 
       - name: Verify legacy v20 database upgrade
         run: |
-          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME="docker.io/${DOCKERHUB_USERNAME}/navelix"
           bash scripts/smoke-log-upgrade.sh "${IMAGE_NAME}@${{ needs.build.outputs.digest }}"
 
       - name: Setup pnpm
@@ -291,7 +287,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     env:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -302,32 +297,20 @@ jobs:
       - uses: docker/setup-buildx-action@v4
       - uses: docker/login-action@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/login-action@v4
-        if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}
-        with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
       - name: Promote the tested manifest without rebuilding
         run: |
           VERIFIED_IMAGE=$(node scripts/image-reference.mjs)
-          GHCR_IMAGE="${VERIFIED_IMAGE%@*}"
+          HUB_IMAGE="docker.io/$DOCKERHUB_USERNAME/navelix"
           VERSION="${RELEASE_TAG#v}"
           docker buildx imagetools create --prefer-index=false \
-            -t "$GHCR_IMAGE:$RELEASE_TAG" -t "$GHCR_IMAGE:$VERSION" -t "$GHCR_IMAGE:latest" \
+            -t "$HUB_IMAGE:$RELEASE_TAG" -t "$HUB_IMAGE:$VERSION" -t "$HUB_IMAGE:latest" \
             "$VERIFIED_IMAGE"
-          if [ -n "$DOCKERHUB_USERNAME" ] && [ -n "$DOCKERHUB_TOKEN" ]; then
-            HUB_IMAGE="docker.io/$DOCKERHUB_USERNAME/navelix"
-            docker buildx imagetools create --prefer-index=false \
-              -t "$HUB_IMAGE:$RELEASE_TAG" -t "$HUB_IMAGE:$VERSION" -t "$HUB_IMAGE:latest" \
-              "$VERIFIED_IMAGE"
-          fi
       - name: Verify stable tags still reference the tested digest
         run: |
           VERIFIED_IMAGE=$(node scripts/image-reference.mjs)
-          GHCR_IMAGE="${VERIFIED_IMAGE%@*}"
+          HUB_IMAGE="docker.io/$DOCKERHUB_USERNAME/navelix"
           EXPECTED="${VERIFIED_IMAGE##*@}"
           verify_digest() {
             ACTUAL=$(docker buildx imagetools inspect "$1" --format '{{json .Manifest}}' | jq -r '.digest')
@@ -337,10 +320,7 @@ jobs:
             fi
           }
           for TAG in "$RELEASE_TAG" "${RELEASE_TAG#v}" latest; do
-            verify_digest "$GHCR_IMAGE:$TAG"
-            if [ -n "$DOCKERHUB_USERNAME" ] && [ -n "$DOCKERHUB_TOKEN" ]; then
-              verify_digest "docker.io/$DOCKERHUB_USERNAME/navelix:$TAG"
-            fi
+            verify_digest "$HUB_IMAGE:$TAG"
           done
       - name: Update Docker Hub Description
         if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}

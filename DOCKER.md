@@ -8,9 +8,7 @@ Navelix 面向个人用户，把网址导航、AI 助手、效率工具、个人
 
 ## 🚀 快速启动
 
-> 镜像由 GitHub Actions 自动构建、冒烟测试并发布，来源：
-> - Docker Hub：`timorpic/navelix:latest`（尽力同步，若上游抖动失败可从 GHCR 拉取）
-> - GitHub Container Registry (GHCR)：`ghcr.io/timorpic/navelix:latest`
+> 镜像由 GitHub Actions 自动构建、冒烟测试并发布至 Docker Hub：`timorpic/navelix:latest`
 
 ### 方式一：Docker Compose（推荐）
 
