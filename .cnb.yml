@@ -1,0 +1,28 @@
+# 手动验证；代码推送不触发构建。
+main:
+  api_trigger_navelix_checks:
+    - name: Navelix 检查与测试
+      runner:
+        tags: cnb:arch:amd64
+        cpus: 4
+      docker:
+        image: node:24-bookworm
+      stages:
+        - name: 静态检查、测试覆盖率和构建
+          timeout: 30m
+          script: |
+            set -eu
+            export CI=true NEXT_TELEMETRY_DISABLED=1
+            npm install --global pnpm@11.16.0
+            pnpm install --frozen-lockfile
+            pnpm lint
+            pnpm typecheck
+            pnpm test:coverage
+            pnpm build
+        - name: 浏览器端到端验证
+          timeout: 30m
+          script: |
+            set -eu
+            export CI=true NEXT_TELEMETRY_DISABLED=1
+            pnpm exec playwright install --with-deps chromium
+            pnpm test:e2e
