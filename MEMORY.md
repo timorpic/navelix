@@ -28,7 +28,7 @@ Navelix（Personal Digital Hub）。
 
 ### 前端
 
-Next.js `16.3.8`（App Router）+ React `19.2.8`，Tailwind CSS 4（PostCSS 插件），TypeScript 5 严格模式。界面文案经 `next-intl` 管理，字典在 `messages/zh-CN.json`、`messages/en.json`。依据：`package.json`、[DEVELOPMENT](docs/DEVELOPMENT.md)。
+Next.js `16.4.5`（App Router）+ React `19.2.8`，Tailwind CSS 4（PostCSS 插件），TypeScript 5 严格模式。界面文案经 `next-intl` 管理，字典在 `messages/zh-CN.json`、`messages/en.json`。依据：`package.json`、[DEVELOPMENT](docs/DEVELOPMENT.md)。
 
 ### 后端
 

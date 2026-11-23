@@ -2,7 +2,7 @@
 
 ## 技术栈与运行方式
 
-项目为单个 Next.js App Router 全栈应用。当前依赖声明为 Next.js `16.3.8`、React `19.2.8`、Tailwind CSS 4、TypeScript 5；准确版本与依赖解析分别以 `package.json` 和 `pnpm-lock.yaml` 为准。
+项目为单个 Next.js App Router 全栈应用。当前依赖声明为 Next.js `16.4.5`、React `19.2.8`、Tailwind CSS 4、TypeScript 5；准确版本与依赖解析分别以 `package.json` 和 `pnpm-lock.yaml` 为准。
 
 服务端使用 Node 内置 `node:sqlite` 的同步连接。认证、数据库、文件读写和后台任务要求 Node 运行环境，不能当作纯静态站点或仅 Edge 应用部署。生产输出为 `standalone`。
 
