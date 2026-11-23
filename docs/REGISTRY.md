@@ -36,11 +36,11 @@
 
 1. 跳过非应用 Release，复用同一提交的源码 CI（lint、类型、覆盖率、构建及生产 E2E），校验应用 Release tag 与 `package.json` 一致。
 2. 如配置 `EE_COMMERCIAL_BUNDLE`，从 Secret 恢复商业驱动；没有则构建 CE。
-3. 只向 GHCR 推送本次运行的 `candidate-<run_id>-<attempt>` 标签，并记录不可变 digest。
+3. 只向 Docker Hub 推送本次运行的 `candidate-<run_id>-<attempt>` 标签，并记录不可变 digest。
 4. 冒烟任务按 digest 拉取，检查登录、种子数据、配置写入、敏感字段、非 root、数据权限与制品；以独立卷验证历史 v20 升级；另启动独立容器运行生产镜像 E2E。
-5. 仅正式应用 Release 的全部门禁成功后，用同一 manifest digest 提升 GHCR 的版本及 latest；有凭据时同步 Docker Hub。使用 `imagetools create --prefer-index=false` 保留单一来源 manifest 格式，不重新构建。手动触发和预发布保留候选，不提升稳定标签。
+5. 仅正式应用 Release 的全部门禁成功后，用同一 manifest digest 提升 Docker Hub 的版本及 latest。使用 `imagetools create --prefer-index=false` 保留单一来源 manifest 格式，不重新构建。手动触发和预发布保留候选，不提升稳定标签。
 
-跨 registry 的提升不是事务：若只有一个 registry 成功，需分别报告并修复失败渠道；已经提升的也是通过验证的镜像。发布流程串行执行，任一验收失败时不进入提升任务。组件改动随应用产物分发，无独立组件发布步骤。该流程实现参考 [Docker imagetools create](https://docs.docker.com/reference/cli/docker/buildx/imagetools/create/)，远程发布结果须在实际运行后核验。
+Docker Hub 凭据（`DOCKERHUB_USERNAME`、`DOCKERHUB_TOKEN`）是构建前置条件，缺失时构建直接失败。发布流程串行执行，任一验收失败时不进入提升任务。组件改动随应用产物分发，无独立组件发布步骤。该流程实现参考 [Docker imagetools create](https://docs.docker.com/reference/cli/docker/buildx/imagetools/create/)，远程发布结果须在实际运行后核验。
 
 版本与日志脚本见 [DEVELOPMENT](DEVELOPMENT.md)，持久化和运行条件见 [DEPLOYMENT](DEPLOYMENT.md)。
 
