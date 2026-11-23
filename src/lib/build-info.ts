@@ -8,7 +8,7 @@ export interface AppBuildInfo {
   isDockerBuild: boolean;
 }
 
-const DEFAULT_VERSION = "2.10.27";
+const DEFAULT_VERSION = "2026.11.1";
 
 /**
  * 获取系统当前真实构建元数据
